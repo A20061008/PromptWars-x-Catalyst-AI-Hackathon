@@ -26,7 +26,7 @@ class ServerTestCase(unittest.TestCase):
         self.thread.join(timeout=3)
         self.temporary_directory.cleanup()
 
-    def request(self, method, path, body=None, cookie=None, origin=None):
+    def request(self, method, path, body=None, cookie=None, origin=None, fetch_site=None):
         connection = http.client.HTTPConnection(self.host, self.port)
         headers = {}
         if body is not None:
@@ -35,6 +35,8 @@ class ServerTestCase(unittest.TestCase):
             headers["Cookie"] = cookie
         if origin:
             headers["Origin"] = origin
+        if fetch_site:
+            headers["Sec-Fetch-Site"] = fetch_site
         encoded = json.dumps(body) if body is not None else None
         connection.request(method, path, body=encoded, headers=headers)
         response = connection.getresponse()
@@ -52,10 +54,27 @@ class ServerTestCase(unittest.TestCase):
 
 
 class ApiTests(ServerTestCase):
+    def test_admin_dashboard_reuses_the_consolidated_overview(self):
+        project_root = Path(__file__).resolve().parent.parent
+        app_source = (project_root / "app.js").read_text(encoding="utf-8")
+        loader = app_source.split("async function loadAdminDashboard()", 1)[1].split("\n}", 1)[0]
+        evaluation_source = (project_root / "evaluation.js").read_text(encoding="utf-8")
+
+        self.assertIn("fetch('/api/admin/overview'", loader)
+        self.assertNotIn("fetch('/api/tasks'", loader)
+        self.assertNotIn("fetch('/api/admin/medications'", loader)
+        self.assertIn("everwell:admin-overview", evaluation_source)
+        self.assertNotIn("fetch('/api/admin/overview'", evaluation_source)
+
     def test_api_protects_and_persists_care_state(self):
         status, headers, _ = self.request("GET", "/styles.css")
         self.assertEqual(status, 200)
         self.assertIn("text/css", headers.get("Content-Type"))
+        status, headers, _ = self.request("GET", "/")
+        self.assertEqual(status, 200)
+        self.assertEqual(headers.get("Server"), "Everwell")
+        self.assertIn("script-src 'self';", headers.get("Content-Security-Policy"))
+        self.assertNotIn("script-src 'self' 'unsafe-inline'", headers.get("Content-Security-Policy"))
         status, _, _ = self.request("GET", "/chatbot.js")
         self.assertEqual(status, 200)
         status, _, _ = self.request("GET", "/evaluation.js")
@@ -109,7 +128,11 @@ class ApiTests(ServerTestCase):
             origin=origin,
         )[0], 200)
         self.assertEqual(self.request("GET", "/api/session", cookie=cookie)[2]["name"], "Test Caregiver")
-        self.assertEqual(self.request("POST", "/api/logout", cookie=cookie)[0], 200)
+        self.assertEqual(self.request(
+            "POST", "/api/logout", cookie=cookie, origin=origin, fetch_site="cross-site",
+        )[0], 403)
+        self.assertEqual(self.request("GET", "/api/session", cookie=cookie)[0], 200)
+        self.assertEqual(self.request("POST", "/api/logout", cookie=cookie, origin=origin)[0], 200)
         self.assertEqual(self.request("GET", "/api/session", cookie=cookie)[0], 401)
         self.assertEqual(self.request(
             "POST",
@@ -172,6 +195,7 @@ class ApiTests(ServerTestCase):
         self.assertEqual(status, 201)
         feedback_id = submitted["feedback"]["id"]
         self.assertEqual(self.request("GET", "/api/admin/feedback", cookie=member)[0], 403)
+        self.assertEqual(self.request("GET", "/api/admin/overview", cookie=member)[0], 403)
         self.assertEqual(self.request(
             "POST", "/api/feedback", payload, admin, origin,
         )[0], 403)
@@ -183,6 +207,10 @@ class ApiTests(ServerTestCase):
         self.assertEqual(status, 200)
         self.assertEqual(result["summary"], {"count": 1, "averageRating": 5.0, "newCount": 1})
         self.assertNotIn("principalId", result["entries"][0])
+        status, _, overview = self.request("GET", "/api/admin/overview", cookie=admin)
+        self.assertEqual(status, 200)
+        self.assertEqual(overview["feedback"]["summary"]["count"], 1)
+        self.assertEqual(len(overview["medications"]), 4)
 
         review_path = f"/api/admin/feedback/{feedback_id}"
         self.assertEqual(self.request(

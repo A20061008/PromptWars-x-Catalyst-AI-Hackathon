@@ -26,6 +26,7 @@ Run API checks with `python -m unittest discover -s test -p "test_*.py"` (or `np
 - `POST /api/tasks` / `GET /api/tasks` — lets signed-in household members and guests submit requests; users see their own, while administrators see all.
 - `PATCH /api/tasks/:id` — administrator-only status and reply updates, visible to the original requester.
 - `GET /api/admin/medications` and `POST /api/admin/medications/:id/verify` — administrator-only medication review and verification records.
+- `GET /api/admin/overview` — one administrator-only response containing request, medication, and feedback data for the dashboard.
 - `POST /api/feedback` — signed-in member/guest app ratings and optional comments; submissions are limited per session.
 - `GET /api/admin/feedback` and `PATCH /api/admin/feedback/:id` — administrator-only feedback summary, review status, and internal note.
 - `POST /api/logout` — clears the current session.

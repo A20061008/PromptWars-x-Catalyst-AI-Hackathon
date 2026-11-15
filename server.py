@@ -38,7 +38,7 @@ SECURITY_HEADERS = {
     "Referrer-Policy": "strict-origin-when-cross-origin",
     "Permissions-Policy": "camera=(), microphone=(), geolocation=(self)",
     "Content-Security-Policy": (
-        "default-src 'self'; script-src 'self' 'unsafe-inline'; "
+        "default-src 'self'; script-src 'self'; "
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
         "font-src https://fonts.gstatic.com; img-src 'self' data:; "
         "connect-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
@@ -200,6 +200,30 @@ def medication_id(dose):
     value = [dose["name"], js_or_empty(dose.get("details")), js_or_empty(dose.get("time")), dose["taken"]]
     serialized = json.dumps(value, ensure_ascii=False, separators=(",", ":"))
     return hashlib.sha256(serialized.encode("utf-8")).hexdigest()[:24]
+
+
+def build_admin_medications(care_state, task_state):
+    medications = []
+    for dose in care_state["doses"]:
+        identifier = medication_id(dose)
+        review = next((item for item in task_state["medicationReviews"] if item["medicationId"] == identifier), None)
+        medications.append({
+            "id": identifier,
+            "name": dose["name"],
+            "details": js_or_empty(dose.get("details")),
+            "time": js_or_empty(dose.get("time")),
+            "taken": dose["taken"],
+            "review": review,
+        })
+    return medications
+
+
+def summarize_feedback(entries):
+    return {
+        "count": len(entries),
+        "averageRating": round(sum(item["rating"] for item in entries) / len(entries), 1) if entries else None,
+        "newCount": sum(item["status"] == "new" for item in entries),
+    }
 
 
 def iso_now():
@@ -423,7 +447,11 @@ def create_server(options=None):
     auth_lock = threading.RLock()
 
     class Handler(BaseHTTPRequestHandler):
-        server_version = "EverwellPython/1.0"
+        server_version = "Everwell"
+        sys_version = ""
+
+        def version_string(self):
+            return self.server_version
 
         def log_message(self, fmt, *args):
             print(f"{self.log_date_time_string()} {fmt % args}", flush=True)
@@ -468,6 +496,9 @@ def create_server(options=None):
                 raise HttpError(400, "Request body must be valid JSON.") from error
 
         def _check_same_origin(self):
+            fetch_site = self.headers.get("Sec-Fetch-Site", "").lower()
+            if fetch_site in ("cross-site", "same-site"):
+                raise HttpError(403, "Cross-origin request denied.")
             origin = self.headers.get("Origin")
             if not origin:
                 return
@@ -598,6 +629,7 @@ def create_server(options=None):
             if path == "/api/register" and method == "POST":
                 return self._register()
             if path == "/api/logout" and method == "POST":
+                self._check_same_origin()
                 token = self._cookie("everwell_session")
                 with auth_lock:
                     sessions.pop(token, None)
@@ -677,11 +709,7 @@ def create_server(options=None):
                 ordered = sorted(entries, key=lambda entry: entry["createdAt"], reverse=True)
                 return self._send_json(200, {
                     "entries": ordered,
-                    "summary": {
-                        "count": len(entries),
-                        "averageRating": round(sum(item["rating"] for item in entries) / len(entries), 1) if entries else None,
-                        "newCount": sum(item["status"] == "new" for item in entries),
-                    },
+                    "summary": summarize_feedback(entries),
                 })
 
             feedback_match = re.fullmatch(r"/api/admin/feedback/([0-9a-f-]{36})", path, re.IGNORECASE)
@@ -780,19 +808,24 @@ def create_server(options=None):
                     raise HttpError(403, "Administrator access is required.")
                 care_state = store.read_state()
                 task_state = store.read_tasks()
-                medications = []
-                for dose in care_state["doses"]:
-                    identifier = medication_id(dose)
-                    review = next((item for item in task_state["medicationReviews"] if item["medicationId"] == identifier), None)
-                    medications.append({
-                        "id": identifier,
-                        "name": dose["name"],
-                        "details": js_or_empty(dose.get("details")),
-                        "time": js_or_empty(dose.get("time")),
-                        "taken": dose["taken"],
-                        "review": review,
-                    })
-                return self._send_json(200, {"medications": medications})
+                return self._send_json(200, {"medications": build_admin_medications(care_state, task_state)})
+
+            if path == "/api/admin/overview" and method == "GET":
+                session = self._get_session()
+                if session["role"] != "admin":
+                    raise HttpError(403, "Administrator access is required.")
+                with store.lock:
+                    task_state = store.read_tasks()
+                    care_state = store.read_state()
+                    feedback_state = store.read_feedback()
+                return self._send_json(200, {
+                    "tasks": sorted(task_state["tasks"], key=lambda task: task["createdAt"], reverse=True),
+                    "medications": build_admin_medications(care_state, task_state),
+                    "feedback": {
+                        "entries": sorted(feedback_state["entries"], key=lambda entry: entry["createdAt"], reverse=True),
+                        "summary": summarize_feedback(feedback_state["entries"]),
+                    },
+                })
 
             review_match = re.fullmatch(r"/api/admin/medications/([a-f0-9]{24})/verify", path, re.IGNORECASE)
             if review_match and method == "POST":
