@@ -83,3 +83,66 @@ body{background:radial-gradient(ellipse at 87% 2%,#e9efff 0,transparent 28%),rad
 .logout-button:hover{background:#f9eee8;color:#8b4e3b}
 .logout-icon{width:18px;text-align:center;font-size:17px}
 @media(max-width:700px){.logout-button{width:48px;align-self:center;justify-content:center;margin-top:auto;padding:0}.logout-label{display:none}}
+.admin-overview-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:0 0 16px}.role-summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.role-summary>div{display:flex;justify-content:space-between;align-items:center;padding:12px;border:1px solid var(--line);border-radius:11px;background:#fbfcff;color:var(--muted);font-size:12px}.role-summary strong{font:700 19px Manrope;color:var(--ink)}.admin-activity-list,.admin-feedback-list{display:grid;gap:9px}.admin-activity-item{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}.admin-activity-item:last-child{border-bottom:0}.admin-activity-item>div{display:grid;gap:3px;min-width:0}.admin-activity-item strong{font-size:12px;overflow-wrap:anywhere}.admin-activity-item time{flex:0 0 auto;color:var(--muted);font-size:10px}.admin-activity-type{color:var(--green2);font-size:10px;font-weight:700}.admin-feedback-card{grid-column:1/-1}.feedback-card{margin-top:16px}.feedback-privacy{margin:2px 0!important;color:var(--muted);font-size:10px!important;line-height:1.55}.feedback-status{margin:0!important;color:var(--green2);font-size:11px}.feedback-summary{margin:0 0 12px;padding:12px;border-radius:10px;background:var(--mint);color:var(--green);font-size:12px;font-weight:700}.admin-feedback-item{display:grid;gap:8px;padding:13px;border:1px solid var(--line);border-radius:12px;background:#fbfcff}.admin-feedback-header{display:flex;justify-content:space-between;align-items:center;gap:10px}.admin-feedback-header strong{font-size:12px}.feedback-badge{padding:4px 8px;border-radius:20px;background:#fff2df;color:#946415;font-size:10px;font-weight:700}.feedback-badge.reviewed{background:#e8f4ec;color:#367353}.admin-feedback-comment{margin:0;color:var(--ink);font-size:12px;line-height:1.5;overflow-wrap:anywhere;white-space:pre-wrap}.admin-feedback-item label{display:grid;gap:5px;color:var(--muted);font-size:10px;font-weight:700}.admin-feedback-item select,.admin-feedback-item textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:9px;background:#fff;color:var(--ink);font:inherit}.admin-feedback-item textarea{resize:vertical}.admin-feedback-item .secondary{justify-self:start}
+@media(max-width:900px){.admin-overview-grid{grid-template-columns:1fr}}
+@media(max-width:700px){.admin-activity-item{flex-direction:column;gap:5px}.admin-feedback-card{grid-column:auto}.feedback-card{margin-top:12px}}
+.admin-overview-stats{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(max-width:1000px){.admin-overview-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+html[data-theme="dark"]{color-scheme:dark;--ink:#edf2fb;--muted:#a5b0c2;--green:#5979e8;--green2:#a5b8ff;--mint:#27324a;--pale:#101522;--white:#1a2231;--line:#343e51;--amber:#393123;--orange:#f0c36d;--rose:#402a34;--shadow:0 12px 35px rgba(0,0,0,.3)}
+html[data-theme="dark"] body{color:var(--ink);background:radial-gradient(ellipse at 87% 2%,#1b2540 0,transparent 30%),radial-gradient(ellipse at 5% 90%,#162b2a 0,transparent 28%),var(--pale)}
+html[data-theme="dark"] .login,html[data-theme="dark"] .login-left{background:#101522}
+html[data-theme="dark"] .login-side{background:#151d2b}
+html[data-theme="dark"] .login-side:before{background:#253149}
+html[data-theme="dark"] .login-side:after{background:#302d2b}
+html[data-theme="dark"] .intro-card,html[data-theme="dark"] .tour-note{background:#1a2231;border-color:#343e51;color:var(--ink)}
+html[data-theme="dark"] .tour-screen{background:linear-gradient(145deg,#222e3d,#33302a)}
+html[data-theme="dark"] .tour-orb{background:#33413c}
+html[data-theme="dark"] .tour-controls{background:#202a39}
+html[data-theme="dark"] .progress{background:#394354}
+html[data-theme="dark"] .sidebar{background:rgba(23,30,44,.96);border-color:var(--line)}
+html[data-theme="dark"] .brand-name,html[data-theme="dark"] .login h1,html[data-theme="dark"] .hello h1,html[data-theme="dark"] .page-heading h1,html[data-theme="dark"] .page-heading h2,html[data-theme="dark"] .card h2,html[data-theme="dark"] .card h3,html[data-theme="dark"] .card h4,html[data-theme="dark"] .user-name,html[data-theme="dark"] .stat-number{color:var(--ink)}
+html[data-theme="dark"] .lead,html[data-theme="dark"] .page-heading p,html[data-theme="dark"] .hello p,html[data-theme="dark"] .crumb,html[data-theme="dark"] .muted,html[data-theme="dark"] .stat-head,html[data-theme="dark"] .stat-sub,html[data-theme="dark"] .small-note,html[data-theme="dark"] .user-role,html[data-theme="dark"] .tour-time,html[data-theme="dark"] .intro-caption span{color:var(--muted)}
+html[data-theme="dark"] .nav button{color:#aab5c8}
+html[data-theme="dark"] .nav button:hover,html[data-theme="dark"] .nav button.active{background:#25314a;color:#c5d0ff;box-shadow:inset 3px 0 #8e9fff}
+html[data-theme="dark"] .nav-label{color:#8794aa}
+html[data-theme="dark"] .care-mini,html[data-theme="dark"] .care-share,html[data-theme="dark"] .date-box,html[data-theme="dark"] .routine-icon,html[data-theme="dark"] .dose-icon,html[data-theme="dark"] .status{background:#263149;color:#c2d0ff}
+html[data-theme="dark"] .circle-row,html[data-theme="dark"] .user-row,html[data-theme="dark"] .appointment,html[data-theme="dark"] .section-foot{border-color:var(--line)}
+html[data-theme="dark"] .card,html[data-theme="dark"] .stat,html[data-theme="dark"] .report-card,html[data-theme="dark"] .assistant-panel,html[data-theme="dark"] .modal,html[data-theme="dark"] .user-row{background:#1a2231;border-color:var(--line);color:var(--ink)}
+html[data-theme="dark"] .dose,html[data-theme="dark"] .task-card,html[data-theme="dark"] .admin-medication-row,html[data-theme="dark"] .admin-feedback-item,html[data-theme="dark"] .admin-activity-item,html[data-theme="dark"] .role-summary>div{background:#202a39;border-color:#394457;color:var(--ink)}
+html[data-theme="dark"] .dose-name,html[data-theme="dark"] .dose-time,html[data-theme="dark"] .appt-info b,html[data-theme="dark"] .appt-time,html[data-theme="dark"] .routine-copy b,html[data-theme="dark"] .circle-copy,html[data-theme="dark"] .admin-medication-info b,html[data-theme="dark"] .admin-activity-item strong,html[data-theme="dark"] .admin-feedback-header strong{color:var(--ink)}
+html[data-theme="dark"] .dose-desc,html[data-theme="dark"] .appt-info div,html[data-theme="dark"] .routine-copy div,html[data-theme="dark"] .circle-copy span,html[data-theme="dark"] .task-meta,html[data-theme="dark"] .task-card p,html[data-theme="dark"] .task-category,html[data-theme="dark"] .admin-medication-info>span:not(.task-status),html[data-theme="dark"] .admin-activity-item time{color:var(--muted)}
+html[data-theme="dark"] .pin-input,html[data-theme="dark"] .lang-select,html[data-theme="dark"] .checkin-select,html[data-theme="dark"] .care-request-form input,html[data-theme="dark"] .care-request-form select,html[data-theme="dark"] .care-request-form textarea,html[data-theme="dark"] .admin-task-card select,html[data-theme="dark"] .admin-task-card textarea,html[data-theme="dark"] .admin-feedback-item select,html[data-theme="dark"] .admin-feedback-item textarea,html[data-theme="dark"] .form-grid input,html[data-theme="dark"] .form-grid select,html[data-theme="dark"] .chat-form input{background:#111927;border-color:#3a465b;color:#edf2fb}
+html[data-theme="dark"] input::placeholder,html[data-theme="dark"] textarea::placeholder{color:#8491a6}
+html[data-theme="dark"] .auth-tab,html[data-theme="dark"] .secondary,html[data-theme="dark"] .icon-btn,html[data-theme="dark"] .filter-chip,html[data-theme="dark"] .suggestions button,html[data-theme="dark"] .modal-close{background:#202a39;border-color:#3a465b;color:#d4dced}
+html[data-theme="dark"] .auth-tab.active,html[data-theme="dark"] .filter-chip.active{background:#2b3857;border-color:#4b5d88;color:#d5ddff}
+html[data-theme="dark"] .primary,html[data-theme="dark"] .round-play{background:#526fd1;color:#fff}
+html[data-theme="dark"] .primary:hover{background:#6480e0}
+html[data-theme="dark"] .link-btn{color:#a5b8ff}
+html[data-theme="dark"] .toggle{background:#485369}
+html[data-theme="dark"] .toggle.on{background:#6f88df}
+html[data-theme="dark"] .status.pending,html[data-theme="dark"] .task-status.in_progress,html[data-theme="dark"] .feedback-badge{background:#473b27;color:#f0c36d}
+html[data-theme="dark"] .task-status{background:#293652;color:#c5d0ff}
+html[data-theme="dark"] .task-status.completed,html[data-theme="dark"] .feedback-badge.reviewed{background:#243d36;color:#9bd5b4}
+html[data-theme="dark"] .task-reply{background:#243b34;color:#b1d6be}
+html[data-theme="dark"] .task-card.urgent{border-left-color:#e0a45f}
+html[data-theme="dark"] .task-priority{color:#f0bd76}
+html[data-theme="dark"] .chat-head{background:#202a39}
+html[data-theme="dark"] .chat-head small,html[data-theme="dark"] .bubble{color:#c1cada}
+html[data-theme="dark"] .bubble{background:#283347}
+html[data-theme="dark"] .bubble.user{background:#526fd1;color:white}
+html[data-theme="dark"] .chat-form,html[data-theme="dark"] .request-panel{border-color:var(--line)}
+html[data-theme="dark"] .request-panel h3,html[data-theme="dark"] .request-panel>p{color:#c0ccdf}
+html[data-theme="dark"] .report-summary>div,html[data-theme="dark"] .report-disclaimer{background:#202a39;border-color:var(--line);color:var(--ink)}
+html[data-theme="dark"] .report-table th,html[data-theme="dark"] .report-table td{border-color:#3a465b;color:var(--ink)}
+html[data-theme="dark"] .report-table th{background:#263149}
+html[data-theme="dark"] .safety-banner,html[data-theme="dark"] .guidance-result,html[data-theme="dark"] .feedback-summary{background:#27324a;border-color:#3a465b;color:#d4dced}
+html[data-theme="dark"] .emergency-action{background:#342832;border-color:#674550;color:#ffd2d5}
+html[data-theme="dark"] .emergency-action.secondary-action{background:#263149;border-color:#3a465b;color:#d4dced}
+html[data-theme="dark"] .modal-backdrop{background:#080c14e8}
+html[data-theme="dark"] .toast{background:#e2e9fa;color:#17243a}
+html[data-theme="dark"] .login h1 em,html[data-theme="dark"] .eyebrow{color:#a5b8ff}
+html[data-theme="dark"] .tour-check{background:#526fd1}
+html[data-theme="dark"] .dose-action{background:#202a39;border-color:#3a465b;color:#d4dced}
+html[data-theme="dark"] .dose-action.done{background:#243d36;border-color:#305848;color:#b1dfbe}
+html[data-theme="dark"] .avatar{border-color:#1a2231;background:#384154;color:#e3e9f4}
+html[data-theme="dark"] .avatar:first-child,html[data-theme="dark"] .avatar.more{background:#2b3850;color:#d3dcff}

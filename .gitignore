@@ -6,4 +6,8 @@ data/accounts.json
 data/accounts.json.*.tmp
 data/care-tasks.json
 data/care-tasks.json.*.tmp
+data/user-feedback.json
+data/user-feedback.json.*.tmp
 npm-debug.log*
+__pycache__/
+*.py[cod]

@@ -184,6 +184,20 @@
      </section>
     </article>
    </section>
+   <article class="card feedback-card" id="userFeedbackCard">
+    <div class="card-head"><div><h2>Share app feedback</h2><div class="muted">Help us evaluate usability and improve Everwell.</div></div></div>
+    <form class="care-request-form" id="userFeedbackForm">
+     <label for="feedbackRating">Overall experience</label>
+     <select id="feedbackRating" name="rating" required><option value="">Choose a rating</option><option value="5">5 — Excellent</option><option value="4">4 — Good</option><option value="3">3 — Okay</option><option value="2">2 — Difficult</option><option value="1">1 — Very difficult</option></select>
+     <label for="feedbackCategory">What is your feedback about?</label>
+     <select id="feedbackCategory" name="category" required><option value="ease">Ease of use</option><option value="features">Features</option><option value="accessibility">Accessibility</option><option value="reliability">Reliability</option><option value="other">Other</option></select>
+     <label for="feedbackComment">Comments (optional)</label>
+     <textarea id="feedbackComment" name="comment" maxlength="500" rows="3" placeholder="What worked well, or what should we improve?"></textarea>
+     <p class="feedback-privacy">App feedback only. Please do not include names, diagnoses, medicines, or other private health information.</p>
+     <button class="primary" type="submit">Submit feedback</button>
+     <p class="feedback-status hidden" id="feedbackSubmitStatus" role="status" aria-live="polite"></p>
+    </form>
+   </article>
   </section>
   <section class="page-view hidden" id="aiSolutionsPage" data-page-view="ai-solutions">
    <header class="page-heading"><div><div class="eyebrow" data-i18n="pageWellbeingLabel">EARLY AWARENESS, GENTLE SUPPORT</div><h1 data-i18n="navAiSolutions">AI Solutions &amp; Preventions</h1><p data-i18n="pageAiLead">Notice changes early and share concerns with the care team.</p></div></header>
@@ -230,10 +244,23 @@
   </section>
   <section class="page-view hidden" id="adminPage" data-page-view="admin">
    <header class="page-heading"><div><div class="eyebrow" data-i18n="adminEyebrow">HOUSEHOLD CARE COORDINATION</div><h1 data-i18n="adminTitle">Administrator care desk</h1><p data-i18n="adminLead">Review household requests, verify medication check-ins, and reach local care contacts.</p></div><button class="secondary" id="refreshAdminDashboard" type="button" data-i18n="adminRefresh">Refresh</button></header>
-   <section class="stats page-stats" aria-label="Administrator care summary">
+   <section class="stats page-stats admin-overview-stats" aria-label="Administrator care summary">
     <article class="stat"><div class="stat-head"><span data-i18n="adminOpenRequests">Open requests</span></div><div class="stat-number" id="adminOpenRequestCount">0</div><div class="stat-sub" data-i18n="adminOpenRequestsNote">awaiting follow-up</div></article>
+    <article class="stat"><div class="stat-head"><span>Urgent requests</span></div><div class="stat-number" id="adminUrgentRequestCount">0</div><div class="stat-sub">still open or in progress</div></article>
+    <article class="stat"><div class="stat-head"><span>Requests completed</span></div><div class="stat-number" id="adminCompletionRate">0%</div><div class="stat-sub" id="adminCompletedRequestCount">0 completed</div></article>
     <article class="stat"><div class="stat-head"><span data-i18n="adminMedicationCount">Medication entries</span></div><div class="stat-number" id="adminMedicationCountValue">0</div><div class="stat-sub" data-i18n="adminMedicationCountNote">in the shared care plan</div></article>
     <article class="stat"><div class="stat-head"><span data-i18n="adminVerifiedCount">Reviewed</span></div><div class="stat-number" id="adminVerifiedCountValue">0</div><div class="stat-sub" data-i18n="adminVerifiedCountNote">medication check-ins</div></article>
+    <article class="stat"><div class="stat-head"><span>App feedback</span></div><div class="stat-number" id="adminAverageFeedback">—</div><div class="stat-sub" id="adminNewFeedbackCount">No new ratings</div></article>
+   </section>
+   <section class="admin-overview-grid">
+    <article class="card">
+     <div class="card-head"><div><h2>User activity by role</h2><div class="muted">Request submissions, not unique user counts</div></div></div>
+     <div class="role-summary"><div><span>Members</span><strong id="adminMemberRequestCount">0</strong></div><div><span>Guests</span><strong id="adminGuestRequestCount">0</strong></div></div>
+    </article>
+    <article class="card">
+     <div class="card-head"><div><h2>Recent activity</h2><div class="muted">Latest requests, check-ins, and feedback</div></div></div>
+     <div class="admin-activity-list" id="adminRecentActivity" aria-live="polite"><p class="muted">Loading activity…</p></div>
+    </article>
    </section>
    <section class="admin-grid">
     <article class="card admin-requests-card"><div class="card-head"><div><h2 data-i18n="adminRequestsTitle">Requests from users and guests</h2><div class="muted" data-i18n="adminRequestsCopy">Every submitted request is routed here for administrator follow-up.</div></div></div><div id="adminCareRequests" class="task-list" aria-live="polite"></div></article>
@@ -243,6 +270,11 @@
      <div class="admin-contact-tools"><button class="primary" id="adminFindHospitals" type="button" data-i18n="pageUseLocation">Use my location</button><p class="location-status" id="adminLocationStatus" role="status" aria-live="polite" data-i18n="pageLocationIdle">Your location is not being accessed.</p><a class="map-link hidden" id="adminHospitalMapLink" href="#" target="_blank" rel="noopener noreferrer" data-i18n="pageOpenMap">Open nearby hospitals in Maps</a></div>
      <div class="admin-contact-tools"><label class="field-label" for="adminDoctorPhone" data-i18n="pageDoctorPhone">Doctor or clinic phone</label><input class="checkin-select" id="adminDoctorPhone" type="tel" inputmode="tel" autocomplete="tel" maxlength="24" placeholder="+91 00000 00000"><a class="emergency-action doctor-action hidden" id="adminDoctorCallLink" href="#" aria-disabled="true" data-i18n="pageCallDoctorNow">Call doctor</a><p class="location-status" id="adminDoctorPhoneStatus" role="status" aria-live="polite" data-i18n="pageDoctorPhoneHelp">Add a number to enable the call link. Your phone will ask before placing a call.</p></div>
     </article>
+    <article class="card admin-feedback-card">
+     <div class="card-head"><div><h2>User feedback evaluation</h2><div class="muted">Review app usability ratings and record internal follow-up notes.</div></div></div>
+     <div id="adminFeedbackSummary" class="feedback-summary" aria-live="polite">Loading feedback…</div>
+     <div id="adminFeedbackList" class="admin-feedback-list" aria-live="polite"></div>
+    </article>
    </section>
   </section>
  </main>
@@ -251,5 +283,8 @@
 <section class="assistant-panel hidden" id="assistantPanel" aria-label="Everwell assistant"><div class="chat-head"><div class="brand-mark" style="width:32px;height:32px;border-radius:10px">✳</div><div><b data-i18n="assistantTitle">Everwell companion</b><small data-i18n="assistantStatus">Here to help, not replace your doctor</small></div><button id="closeChat" aria-label="Close">×</button></div><div class="chat-messages" id="messages" aria-live="polite" aria-relevant="additions"><div class="bubble" data-i18n="assistantGreeting">Hi, Ananya! 🌿 I can help organize your care, explain how to use this app, or find your next reminder. What would be helpful?</div></div><div class="suggestions"><button data-question="What medicines do I have today?">Today's medicines</button><button data-question="When is my next appointment?">Next appointment</button><button data-question="How can I invite family?">Invite family</button></div><div class="chat-emergency-actions" role="group" aria-label="Emergency call options" data-i18n-aria-label="assistantEmergencyActions"><a href="tel:112">112 <span data-i18n="assistantCall112">Emergency services</span></a><a href="tel:108">108 <span data-i18n="assistantCall108">Ambulance</span></a><button type="button" data-page-link="emergency" id="assistantOpenEmergency" data-i18n="assistantOpenEmergency">Emergency options</button></div><form class="chat-form" id="chatForm"><input id="chatInput" autocomplete="off" data-i18n-placeholder="chatPlaceholder" placeholder="Ask me anything about your care…"><button aria-label="Send message">↑</button></form></section>
 <div class="modal-backdrop hidden" id="modalBackdrop"><div class="modal" id="modalContent" role="dialog" aria-modal="true"></div></div>
 <script src="app.js" defer></script>
+<script src="chatbot.js" defer></script>
+<script src="evaluation.js" defer></script>
+<script src="theme.js" defer></script>
 </body>
 </html>
