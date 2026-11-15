@@ -3179,9 +3179,9 @@ function renderAdminMedications() {
 }
 async function loadUserTasks() {
   if (!apiMode) {
-    careTasks = []
+    careTasks = loadLocalTasks()
     renderUserTasks()
-    return false
+    return true
   }
   try {
     const response = await fetch('/api/tasks', { cache: 'no-store' }),
@@ -3197,8 +3197,12 @@ async function loadUserTasks() {
 }
 async function loadAdminDashboard() {
   if (!apiMode) {
-    showToast(t('authServerRequired'))
-    return false
+    careTasks = loadLocalTasks()
+    adminMedications = loadLocalAdminMedications()
+    renderAdminTasks()
+    renderAdminMedications()
+    window.dispatchEvent(new CustomEvent('everwell:admin-overview', { detail: { tasks: careTasks, medications: adminMedications } }))
+    return true
   }
   try {
     const response = await fetch('/api/admin/overview', { cache: 'no-store' })
@@ -3217,12 +3221,30 @@ async function loadAdminDashboard() {
 }
 async function submitCareRequest(event) {
   event.preventDefault()
-  if (!apiMode) {
-    showToast(t('authServerRequired'))
-    return
-  }
   const form = event.currentTarget,
     payload = Object.fromEntries(new FormData(form).entries())
+  if (!apiMode) {
+    const task = {
+      id: `local-task-${Date.now()}`,
+      title: payload.title || 'Care request',
+      details: payload.details || '',
+      category: payload.category || 'care',
+      priority: payload.priority || 'normal',
+      status: 'open',
+      createdAt: new Date().toISOString(),
+      requesterName: currentRole === 'admin' ? 'Administrator' : 'Guest',
+      requesterRole: currentRole === 'admin' ? 'admin' : 'guest',
+      adminNote: '',
+    }
+    const tasks = loadLocalTasks()
+    tasks.unshift(task)
+    persist('tasks', tasks)
+    careTasks = tasks
+    form.reset()
+    renderUserTasks()
+    showToast(t('requestSubmitted'))
+    return
+  }
   try {
     const response = await fetch('/api/tasks', {
         method: 'POST',
@@ -3246,6 +3268,16 @@ async function saveCareTask(taskId) {
       element => element.dataset.taskNote === taskId,
     )
   if (!status || !note) return
+  if (!apiMode) {
+    const tasks = loadLocalTasks().map(task =>
+      task.id === taskId ? { ...task, status: status.value, adminNote: note.value } : task,
+    )
+    persist('tasks', tasks)
+    careTasks = tasks
+    renderAdminTasks()
+    showToast(t('adminTaskSaved'))
+    return
+  }
   try {
     const response = await fetch(`/api/tasks/${encodeURIComponent(taskId)}`, {
         method: 'PATCH',
@@ -3260,6 +3292,21 @@ async function saveCareTask(taskId) {
   }
 }
 async function verifyAdminMedication(medicationId) {
+  if (!apiMode) {
+    const medications = loadLocalAdminMedications().map(medication =>
+      medication.id === medicationId
+        ? {
+            ...medication,
+            review: { reviewedBy: 'Administrator', reviewedAt: new Date().toISOString() },
+          }
+        : medication,
+    )
+    persist('medications', medications)
+    adminMedications = medications
+    renderAdminMedications()
+    showToast(t('adminReviewSaved'))
+    return
+  }
   try {
     const response = await fetch(
         `/api/admin/medications/${encodeURIComponent(medicationId)}/verify`,
@@ -3435,12 +3482,57 @@ async function authenticate(mode) {
       }
     }
   } else {
-    if (!['guest', 'pin'].includes(mode)) {
+    const accounts = loadLocalAccounts()
+    if (mode === 'guest') {
+      identity = { role: 'guest', name: 'Guest' }
+    } else if (mode === 'pin') {
+      if (document.getElementById('pin').value.trim().length < 4) {
+        showToast(t('enterPin'))
+        return
+      }
+      if (document.getElementById('pin').value === '1234') {
+        identity = { role: 'member', name: 'Ananya Rao' }
+      } else {
+        showToast('The family demo PIN was not recognized.')
+        return
+      }
+    } else if (mode === 'admin') {
+      if (document.getElementById('adminPin').value === '5678') {
+        identity = { role: 'admin', name: 'Administrator' }
+      } else {
+        showToast('The administrator PIN was not recognized.')
+        return
+      }
+    } else if (mode === 'account') {
+      const email = document.getElementById('authEmail').value.trim().toLowerCase()
+      const password = document.getElementById('authPassword').value
+      const account = accounts.find(item => item.email.toLowerCase() === email && item.password === password)
+      if (!account) {
+        showToast('The email or password was not recognized.')
+        return
+      }
+      identity = { role: 'member', name: account.name }
+    } else if (mode === 'register') {
+      const name = document.getElementById('registerName').value.trim()
+      const email = document.getElementById('registerEmail').value.trim().toLowerCase()
+      const password = document.getElementById('registerPassword').value
+      if (!name || !email || password.length < 8) {
+        showToast('Enter a name, valid email, and a password with at least 8 characters.')
+        return
+      }
+      const duplicate = accounts.some(item => item.email.toLowerCase() === email)
+      if (duplicate) {
+        showToast('That email is already in use on this demo device.')
+        return
+      }
+      const next = [
+        ...accounts,
+        { id: `local-account-${Date.now()}`, name, email, password },
+      ]
+      persist('accounts', next)
+      identity = { role: 'member', name }
+    } else {
       showToast(t('authServerRequired'))
-      return
-    }
-    if (mode === 'pin' && document.getElementById('pin').value.trim().length < 4) {
-      showToast(t('enterPin'))
       return
     }
     state = loadLocalCareState()
@@ -3473,6 +3565,75 @@ function loadLocalCareState() {
     appointments: load('appointments', seedAppointments),
     routines: load('routines', seedRoutines),
   }
+}
+function loadLocalAccounts() {
+  const defaultAccounts = [
+    {
+      id: 'demo-family-member',
+      name: 'Ananya Rao',
+      email: 'ananya@example.com',
+      password: 'care-demo-pass',
+    },
+  ]
+  return load('accounts', defaultAccounts)
+}
+function loadLocalTasks() {
+  const defaultTasks = [
+    {
+      id: 'demo-task-1',
+      title: 'Morning check-in',
+      details: 'Please confirm the morning routine is on track.',
+      category: 'care',
+      priority: 'normal',
+      status: 'open',
+      createdAt: new Date().toISOString(),
+      requesterName: 'Guest',
+      requesterRole: 'guest',
+      adminNote: '',
+    },
+    {
+      id: 'demo-task-2',
+      title: 'Medication reminder',
+      details: 'Follow up on the evening medicine schedule this week.',
+      category: 'medication',
+      priority: 'urgent',
+      status: 'in_progress',
+      createdAt: new Date(Date.now() - 86400000).toISOString(),
+      requesterName: 'Ananya Rao',
+      requesterRole: 'member',
+      adminNote: 'Reminder sent to the care team.',
+    },
+  ]
+  return load('tasks', defaultTasks)
+}
+function loadLocalAdminMedications() {
+  const defaultMedications = [
+    {
+      id: 'demo-med-1',
+      name: 'Vitamin D3',
+      details: '1 softgel · with breakfast',
+      time: '8:00 AM',
+      taken: true,
+      review: { reviewedBy: 'Administrator', reviewedAt: new Date().toISOString() },
+    },
+    {
+      id: 'demo-med-2',
+      name: 'Calcium + D',
+      details: '1 tablet · with water',
+      time: '1:00 PM',
+      taken: false,
+      review: null,
+    },
+    {
+      id: 'demo-med-3',
+      name: 'Evening medicine',
+      details: 'As prescribed · after dinner',
+      time: '8:00 PM',
+      taken: false,
+      review: null,
+    },
+  ]
+  return load('medications', defaultMedications)
 }
 class InvalidApiResponseError extends Error {}
 async function readAuthJson(response, fallbackMessage) {
