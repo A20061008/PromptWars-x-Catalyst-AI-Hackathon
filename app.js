@@ -3398,16 +3398,41 @@ async function authenticate(mode) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         }),
-        result = await response.json()
-      if (!response.ok) throw new Error(result.error || 'Sign-in failed.')
+        result = await readAuthJson(
+          response,
+          'The sign-in service returned an invalid response. Check that the hosted API is configured.',
+        )
+      if (!response.ok) {
+        if (mode === 'guest' && response.status === 404) {
+          throw new InvalidApiResponseError(t('authServerRequired'))
+        }
+        throw new Error(result.error || 'Sign-in failed.')
+      }
       identity = result
       const stateResponse = await fetch('/api/state', { cache: 'no-store' }),
-        saved = await stateResponse.json()
-      if (!stateResponse.ok) throw new Error(saved.error || 'Could not load care data.')
+        saved = await readAuthJson(
+          stateResponse,
+          'The sign-in succeeded, but the care service returned an invalid response.',
+        )
+      if (!stateResponse.ok) {
+        if (mode === 'guest' && stateResponse.status === 404) {
+          throw new InvalidApiResponseError(t('authServerRequired'))
+        }
+        throw new Error(saved.error || 'Could not load care data.')
+      }
       state = saved
     } catch (error) {
-      showToast(error.message)
-      return
+      if (
+        mode === 'guest' &&
+        (error instanceof TypeError || error instanceof InvalidApiResponseError)
+      ) {
+        apiMode = false
+        showToast(t('authServerRequired'))
+        state = loadLocalCareState()
+      } else {
+        showToast(error.message)
+        return
+      }
     }
   } else {
     if (!['guest', 'pin'].includes(mode)) {
@@ -3418,11 +3443,7 @@ async function authenticate(mode) {
       showToast(t('enterPin'))
       return
     }
-    state = {
-      doses: load('doses', seedDoses),
-      appointments: load('appointments', seedAppointments),
-      routines: load('routines', seedRoutines),
-    }
+    state = loadLocalCareState()
   }
   doses = state.doses
   appointments = state.appointments
@@ -3445,6 +3466,21 @@ async function authenticate(mode) {
   render()
   updateGreeting()
   showPage(currentRole === 'admin' ? 'admin' : location.hash.slice(1) || 'dashboard', false)
+}
+function loadLocalCareState() {
+  return {
+    doses: load('doses', seedDoses),
+    appointments: load('appointments', seedAppointments),
+    routines: load('routines', seedRoutines),
+  }
+}
+class InvalidApiResponseError extends Error {}
+async function readAuthJson(response, fallbackMessage) {
+  try {
+    return await response.json()
+  } catch {
+    throw new InvalidApiResponseError(fallbackMessage)
+  }
 }
 function showToast(message) {
   const old = document.querySelector('.toast')
@@ -3791,7 +3827,7 @@ document
   .addEventListener('click', () =>
     document.getElementById('assistantPanel').classList.add('hidden'),
   )
-const apiMode = location.protocol !== 'file:' && location.protocol !== 'about:'
+let apiMode = document.documentElement.dataset.apiMode === 'server'
 async function logout() {
   if (apiMode) {
     try {

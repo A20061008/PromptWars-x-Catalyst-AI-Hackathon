@@ -70,11 +70,15 @@ class ApiTests(ServerTestCase):
         status, headers, _ = self.request("GET", "/styles.css")
         self.assertEqual(status, 200)
         self.assertIn("text/css", headers.get("Content-Type"))
-        status, headers, _ = self.request("GET", "/")
+        status, headers, html = self.request("GET", "/")
         self.assertEqual(status, 200)
         self.assertEqual(headers.get("Server"), "Everwell")
         self.assertIn("script-src 'self';", headers.get("Content-Security-Policy"))
         self.assertNotIn("script-src 'self' 'unsafe-inline'", headers.get("Content-Security-Policy"))
+        self.assertIn(b'data-api-mode="server"', html)
+        status, headers, _ = self.request("GET", "/favicon.svg")
+        self.assertEqual(status, 200)
+        self.assertIn("image/svg+xml", headers.get("Content-Type"))
         status, _, _ = self.request("GET", "/chatbot.js")
         self.assertEqual(status, 200)
         status, _, _ = self.request("GET", "/evaluation.js")
@@ -99,6 +103,27 @@ class ApiTests(ServerTestCase):
         invalid = {"doses": "not a list", "appointments": [], "routines": []}
         self.assertEqual(self.request("PUT", "/api/state", invalid, cookie, f"http://{self.host}:{self.port}")[0], 400)
         self.assertEqual(self.request("PUT", "/api/state", state, cookie, "https://attacker.example")[0], 403)
+
+    def test_guest_member_and_admin_can_log_in_and_load_care_state(self):
+        for credentials, expected_role, expected_name in (
+            ({"mode": "guest"}, "guest", "Guest"),
+            ({"mode": "pin", "pin": "2468"}, "member", "Ananya Rao"),
+            ({"mode": "admin", "pin": "1357"}, "admin", "Administrator"),
+        ):
+            with self.subTest(role=expected_role):
+                status, headers, identity = self.request("POST", "/api/login", credentials)
+                self.assertEqual(status, 200)
+                self.assertEqual(identity["role"], expected_role)
+                self.assertEqual(identity["name"], expected_name)
+
+                cookie = headers.get("Set-Cookie").split(";", 1)[0]
+                session_status, _, session = self.request("GET", "/api/session", cookie=cookie)
+                self.assertEqual(session_status, 200)
+                self.assertEqual(session["role"], expected_role)
+
+                state_status, _, state = self.request("GET", "/api/state", cookie=cookie)
+                self.assertEqual(state_status, 200)
+                self.assertEqual(len(state["doses"]), 4)
 
     def test_registration_login_and_session_revocation(self):
         origin = f"http://{self.host}:{self.port}"

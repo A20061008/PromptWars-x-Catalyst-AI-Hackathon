@@ -26,6 +26,7 @@ ROOT = Path(__file__).resolve().parent
 STATIC_FILES = {
     "/": ("Index.html", "text/html; charset=utf-8"),
     "/Index.html": ("Index.html", "text/html; charset=utf-8"),
+    "/favicon.svg": ("favicon.svg", "image/svg+xml"),
     "/styles.css": ("styles.css", "text/css; charset=utf-8"),
     "/app.js": ("app.js", "text/javascript; charset=utf-8"),
     "/chatbot.js": ("chatbot.js", "text/javascript; charset=utf-8"),
@@ -471,6 +472,12 @@ def create_server(options=None):
 
         def _send_asset(self, file_name, content_type):
             asset = (ROOT / file_name).read_bytes()
+            if file_name == "Index.html":
+                asset = asset.replace(
+                    b'data-api-mode="static"',
+                    b'data-api-mode="server"',
+                    1,
+                )
             self.send_response(200)
             for name, val in SECURITY_HEADERS.items():
                 self.send_header(name, val)
@@ -897,8 +904,10 @@ def main():
     port = int(os.environ.get("PORT", "4173"))
     if not 0 < port < 65536:
         raise ValueError("PORT must be between 1 and 65535.")
-    server = create_server({"address": ("127.0.0.1", port)})
-    print(f"Everwell demo running at http://127.0.0.1:{port}", flush=True)
+    host = os.environ.get("HOST", "127.0.0.1")
+    data_dir = os.environ.get("DATA_DIR") or ROOT / "data"
+    server = create_server({"address": (host, port), "dataDir": data_dir})
+    print(f"Everwell demo running on {host}:{port}", flush=True)
     try:
         server.serve_forever()
     except KeyboardInterrupt:

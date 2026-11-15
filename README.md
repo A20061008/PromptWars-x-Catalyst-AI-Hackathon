@@ -10,7 +10,9 @@ A multilingual elder-care coordination demo with a browser frontend (`Index.html
 4. Choose **Continue as guest** for sample data, create a demo account, or sign in with the family PIN (`1234` by default).
 5. Use **Admin** for the separate demo administrator PIN (`5678` by default).
 
-Set `DEMO_PIN` and `ADMIN_PIN` to different four-digit values to change the demo PINs. The API binds to loopback only. Care data and password hashes are stored under `data/`, which is excluded from version control. Account passwords are scrypt-hashed; this local demo is not production authentication.
+On a static host without the Python API, guest access uses browser-local sample data. Account sign-in, administrator tools, chatbot responses, and shared API features require the Python server.
+
+Set `DEMO_PIN` and `ADMIN_PIN` to different four-digit values to change the demo PINs. The API binds to loopback by default; deployment can set `HOST`, `PORT`, and `DATA_DIR`. Care data and password hashes default to `data/`, which is excluded from version control. Account passwords are scrypt-hashed; this local demo is not production authentication.
 
 Run API checks with `python -m unittest discover -s test -p "test_*.py"` (or `npm test`).
 
