@@ -1,0 +1,9 @@
+node_modules/
+.env
+data/care-state.json
+data/care-state.json.*.tmp
+data/accounts.json
+data/accounts.json.*.tmp
+data/care-tasks.json
+data/care-tasks.json.*.tmp
+npm-debug.log*

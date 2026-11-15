@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f4f7fc">
+<meta name="description" content="A calm, connected place for medicines, appointments, and the people who care.">
+<title>Everwell — care, connected</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<section class="login" id="loginScreen">
+ <div class="login-left">
+  <div class="login-brand-row"><div class="brand"><div class="brand-mark">✳</div><span class="brand-name">everwell</span></div><div style="display:flex;gap:8px;align-items:center"><div class="text-size-controls" role="group" aria-label="Text size" data-i18n-aria-label="textSize"><button class="icon-btn" type="button" data-font-step="-1" aria-label="Decrease text size" data-i18n-aria-label="decreaseText" title="Decrease text size">A−</button><button class="icon-btn" type="button" data-font-step="1" aria-label="Increase text size" data-i18n-aria-label="increaseText" title="Increase text size">A+</button></div><select class="lang-select" id="loginLanguage" aria-label="Choose language"></select></div></div>
+  <h1 data-i18n="loginTitle">Care feels better <em>together.</em></h1>
+  <p class="lead" data-i18n="loginLead">A gentler way to stay on top of medicines, appointments, and everyday wellbeing—with your family by your side.</p>
+  <div class="auth-tabs" role="group" aria-label="Choose sign-in option">
+   <button type="button" class="auth-tab active" data-auth-mode="account" aria-pressed="true" data-i18n="authSignIn">Sign in</button>
+   <button type="button" class="auth-tab" data-auth-mode="register" aria-pressed="false" data-i18n="authCreateAccount">Create account</button>
+   <button type="button" class="auth-tab" data-auth-mode="admin" aria-pressed="false" data-i18n="authAdmin">Admin</button>
+  </div>
+  <form class="login-form" id="loginForm" aria-label="Account sign in">
+   <div class="auth-fields" id="accountFields">
+    <label class="field-label" for="authEmail" data-i18n="authEmail">Email address</label>
+    <input class="pin-input" id="authEmail" type="email" autocomplete="username" maxlength="254" required placeholder="you@example.com">
+    <label class="field-label auth-second-label" for="authPassword" data-i18n="authPassword">Password</label>
+    <input class="pin-input" id="authPassword" type="password" autocomplete="current-password" maxlength="128" required>
+   </div>
+   <div class="auth-fields hidden" id="registerFields">
+    <label class="field-label" for="registerName" data-i18n="authName">Your name</label>
+    <input class="pin-input" id="registerName" type="text" autocomplete="name" maxlength="80" required placeholder="Ananya Rao">
+    <label class="field-label auth-second-label" for="registerEmail" data-i18n="authEmail">Email address</label>
+    <input class="pin-input" id="registerEmail" type="email" autocomplete="email" maxlength="254" required placeholder="you@example.com">
+    <label class="field-label auth-second-label" for="registerPassword" data-i18n="authNewPassword">Create a password (8+ characters)</label>
+    <input class="pin-input" id="registerPassword" type="password" autocomplete="new-password" minlength="8" maxlength="128" required>
+   </div>
+   <div class="auth-fields hidden" id="adminFields">
+    <label class="field-label" for="adminPin" data-i18n="authAdminPin">Administrator PIN</label>
+    <input class="pin-input" id="adminPin" type="password" inputmode="numeric" maxlength="4" autocomplete="current-password" required placeholder="••••">
+   </div>
+   <div class="auth-fields hidden" id="pinFields">
+    <label class="field-label" for="pin" data-i18n="pinLabel">Family demo PIN</label>
+    <input class="pin-input" id="pin" type="password" maxlength="4" inputmode="numeric" placeholder="••••" autocomplete="one-time-code" required>
+   </div>
+   <button class="primary" id="authSubmit" type="submit" data-i18n="authSignIn">Sign in</button>
+   <div class="small-note" id="authNote" data-i18n="authDemoNote">Demo only. Do not enter real patient information or reuse a personal password.</div>
+  </form>
+  <div class="auth-extra">
+   <button class="secondary" id="guestLogin" type="button" data-i18n="authGuest">Continue as guest</button>
+   <button class="link-btn" id="useDemoPin" type="button" data-i18n="authUsePin">Use family demo PIN</button>
+  </div>
+ </div>
+ <div class="login-side">
+  <div class="intro-card">
+   <div class="tour-screen" role="group" aria-label="Animated Everwell product tour">
+    <div class="tour-orb"></div>
+    <div class="tour-note"><span class="tour-pill" data-i18n="dailyCare">TODAY'S CARE</span><h3 data-i18n="tourTitle">A little care, right on time.</h3><p data-i18n="tourCopy">Gentle reminders for the things that keep you feeling your best.</p><div class="tour-check" data-i18n="tourButton">✓ &nbsp; Morning medicine taken</div></div>
+    <div class="tour-controls"><button class="round-play" type="button" aria-label="Pause product tour">Ⅱ</button><div class="progress"><i></i></div><span class="tour-time">00:42</span></div>
+   </div>
+   <div class="intro-caption"><strong data-i18n="tourCaption">A quick look around Everwell</strong><span data-i18n="tourSub">A 42-second product tour</span></div>
+  </div>
+ </div>
+</section>
+<div class="app hidden" id="app">
+ <aside class="sidebar">
+  <div class="brand"><div class="brand-mark">✳</div><span class="brand-name">everwell</span></div>
+  <div class="nav-label" data-i18n="menu">MENU</div>
+  <nav class="nav" aria-label="Main navigation">
+   <button data-page="admin" id="adminNavButton" class="hidden" data-role-nav="admin"><span class="nav-icon">⚙</span><span data-i18n="navAdmin">Admin desk</span></button>
+   <button class="active" data-page="dashboard" data-role-nav="member"><span class="nav-icon">⌂</span><span data-i18n="navOverview">Overview</span></button>
+   <button data-page="medications" data-role-nav="member"><span class="nav-icon">◉</span><span data-i18n="navMedicines">My medicines</span></button>
+   <button data-page="appointments" data-role-nav="member"><span class="nav-icon">▦</span><span data-i18n="navAppointments">Appointments</span></button>
+   <button data-page="reports"><span class="nav-icon">▤</span><span data-i18n="navReports">Reports</span></button>
+   <button data-page="routines" data-role-nav="member"><span class="nav-icon">♡</span><span data-i18n="navRoutines">Daily routines</span></button>
+   <button data-page="family" data-role-nav="member"><span class="nav-icon">♧</span><span data-i18n="navCircle">Care circle</span></button>
+   <button data-page="ai-solutions" data-role-nav="member"><span class="nav-icon">✧</span><span data-i18n="navAiSolutions">AI Solutions &amp; Preventions</span></button>
+   <button data-page="emergency"><span class="nav-icon">＋</span><span data-i18n="navEmergency">Emergency</span></button>
+  </nav>
+  <div class="side-bottom"><div class="care-mini" data-role-nav="member"><div class="mini-title" data-i18n="careCircle">Your care circle</div><div class="avatar-stack"><div class="avatar">A</div><div class="avatar">R</div><div class="avatar">S</div><div class="avatar more">+1</div></div><div class="care-meta" data-i18n="membersOnline">4 people keeping in touch</div></div><div class="user-row"><div class="user-avatar">👵</div><div><div class="user-name">Ananya Rao</div><div class="user-role" data-i18n="profileLabel">Your health profile</div></div></div></div>
+  <button class="logout-button" id="logoutButton" type="button" aria-label="Log out" data-i18n-aria-label="authLogout"><span class="logout-icon" aria-hidden="true">↪</span><span class="logout-label" data-i18n="authLogout">Log out</span></button>
+ </aside>
+ <main class="main">
+  <header class="topbar"><div class="crumb"><span data-i18n="crumbHome">Home</span> &nbsp; / &nbsp; <span id="crumbCurrentPage" data-i18n="navOverview">Overview</span></div><div class="top-right"><button class="icon-btn" id="demoButton" aria-label="Watch product demo" title="Watch product demo">▶</button><button class="icon-btn" aria-label="Notifications">♧<i class="dot"></i></button><div class="text-size-controls" role="group" aria-label="Text size" data-i18n-aria-label="textSize"><button class="icon-btn" type="button" data-font-step="-1" aria-label="Decrease text size" data-i18n-aria-label="decreaseText" title="Decrease text size">A−</button><button class="icon-btn" type="button" data-font-step="1" aria-label="Increase text size" data-i18n-aria-label="increaseText" title="Increase text size">A+</button></div><select class="lang-select" id="language" aria-label="Choose language"></select><div class="user-avatar" role="img" aria-label="Ananya Rao">👵</div></div></header>
+  <section class="page-view" id="overviewPage" data-page-view="dashboard">
+  <section class="hello"><div><div class="eyebrow" data-i18n="overviewEyebrow">YOUR HEALTH, AT A GLANCE</div><h1><span data-i18n="greeting">Good morning</span>, Ananya <span aria-hidden="true">☀️</span></h1><p data-i18n="welcome">A new day is a fresh start. Here's your gentle plan for today.</p></div><div class="today" id="todayDate"></div></section>
+  <section class="stats" aria-label="Health summary">
+   <div class="stat"><div class="stat-head"><span data-i18n="todayDoses">Today's medicines</span><i class="stat-icon">◉</i></div><div class="stat-number" id="doseStat">2 <span style="font-size:13px;color:#89958c;font-weight:500" data-i18n="of">of</span> 4</div><div class="stat-sub" data-i18n="dosesCompleted">doses taken so far</div></div>
+   <div class="stat"><div class="stat-head"><span data-i18n="nextVisit">Next appointment</span><i class="stat-icon">▦</i></div><div class="stat-number" id="nextVisitDate" style="font-size:20px">Tomorrow</div><div class="stat-sub" id="nextVisitDetails">Dr. Meera Shah · 10:30 AM</div></div>
+   <div class="stat"><div class="stat-head"><span data-i18n="wellbeing">Wellbeing streak</span><i class="stat-icon">✳</i></div><div class="stat-number">8 <span style="font-size:13px;color:#89958c;font-weight:500" data-i18n="days">days</span></div><div class="stat-sub" data-i18n="greatConsistency">You're doing wonderfully</div></div>
+   <div class="stat"><div class="stat-head"><span data-i18n="careCircle">Care circle</span><i class="stat-icon">♧</i></div><div class="stat-number">4 <span style="font-size:13px;color:#89958c;font-weight:500" data-i18n="members">members</span></div><div class="stat-sub" data-i18n="allConnected">All connected and up to date</div></div>
+  </section>
+  <section class="dashboard-grid">
+   <div class="left-column">
+    <article class="card" id="medCard"><div class="card-head"><div><h2 data-i18n="medicineSchedule">Medicine schedule</h2><div class="muted" style="margin-top:5px" data-i18n="stayOnTrack">One dose at a time. You've got this.</div></div><button class="link-btn" id="addMed">＋ <span data-i18n="addMedicine">Add medicine</span></button></div><div class="dose-list" id="doseList"></div><div class="section-foot"><span data-i18n="remindersLocal">Reminders are shown here in this demo</span><span data-i18n="scheduleSynced">Updated just now ✓</span></div></article>
+    <article class="card"><div class="card-head"><div><h2 data-i18n="appointmentsTitle">Upcoming appointments</h2><div class="muted" style="margin-top:5px" data-i18n="planTogether">The people and places supporting your health.</div></div><button class="link-btn" id="addAppointment">＋ <span data-i18n="addNew">Add new</span></button></div>    <div id="appointmentList" aria-live="polite"></div></article>
+   </div>
+   <div class="right-column">
+    <article class="card"><div class="card-head"><div><h2 data-i18n="routinesTitle">Little things that help</h2><div class="muted" style="margin-top:5px" data-i18n="dailyRhythm">Your everyday wellbeing rhythm</div></div><span class="stat-icon">♡</span></div><div id="routineList"></div></article>
+    <article class="card"><div class="card-head"><div><h2 data-i18n="circleTitle">Your care circle</h2><div class="muted" style="margin-top:5px" data-i18n="alwaysInYourCorner">Always in your corner</div></div><button class="link-btn" data-page-link="family" data-i18n="viewAll">View all</button></div><div id="familyList"></div><div class="care-share"><b data-i18n="sharedWithLove">Shared with love</b><br><span data-i18n="familyUpdates">Your family can see your care updates and help when you need them.</span></div></article>
+   </div>
+  </section>
+  <footer style="padding:22px 4px;color:#9aa39b;font-size:10px;line-height:1.6" data-i18n="disclaimer">Everwell is a care-organizing demo, not a medical device. Always follow your clinician's instructions. Demo information is stored only in this browser. Google Calendar links open Google only when selected.</footer>
+  </section>
+  <section class="page-view hidden" id="medicationsPage" data-page-view="medications">
+   <header class="page-heading"><div><div class="eyebrow" data-i18n="overviewEyebrow">YOUR HEALTH, AT A GLANCE</div><h1 data-i18n="navMedicines">My medicines</h1><p data-i18n="stayOnTrack">One dose at a time. You've got this.</p></div><button class="primary" id="addMedPage">＋ <span data-i18n="addMedicine">Add medicine</span></button></header>
+   <section class="stats page-stats" aria-label="Medication summary">
+    <article class="stat"><div class="stat-head"><span data-i18n="pageMedicineTotal">Scheduled medicines</span></div><div class="stat-number" id="medPageTotal">0</div><div class="stat-sub" data-i18n="pageMedicineTotalNote">in your daily plan</div></article>
+    <article class="stat"><div class="stat-head"><span data-i18n="pageMedicineTaken">Taken today</span></div><div class="stat-number" id="medPageTaken">0</div><div class="stat-sub" data-i18n="dosesCompleted">doses taken so far</div></article>
+    <article class="stat"><div class="stat-head"><span data-i18n="pageMedicineRemaining">Still to take</span></div><div class="stat-number" id="medPageRemaining">0</div><div class="stat-sub" data-i18n="pageMedicineReminder">Check the times below</div></article>
+    <article class="stat"><div class="stat-head"><span data-i18n="pageMedicineProgress">Today's progress</span></div><div class="stat-number" id="medPageProgress">0%</div><div class="stat-sub" data-i18n="pageMedicineProgressNote">based on marked doses</div></article>
+   </section>
+   <section class="page-grid">
+    <article class="card"><div class="card-head"><div><h2 data-i18n="medicineSchedule">Medicine schedule</h2><div class="muted" data-i18n="pageMedicineListNote">Review your plan and mark a dose when taken.</div></div></div>
+     <div class="filter-row" role="group" aria-label="Filter medicines"><button class="filter-chip active" type="button" data-dose-filter="all" aria-pressed="true" data-i18n="viewAll">View all</button><button class="filter-chip" type="button" data-dose-filter="remaining" aria-pressed="false" data-i18n="pageMedicineRemaining">Still to take</button><button class="filter-chip" type="button" data-dose-filter="taken" aria-pressed="false" data-i18n="doseTaken">Taken today</button></div>
+     <div class="dose-list page-dose-list" id="medicationPageList"></div>
+    </article>
+    <article class="card care-tip"><div class="stat-icon">♡</div><h2 data-i18n="pageMedicineTipTitle">A gentle reminder</h2><p data-i18n="pageMedicineTip">Use the schedule your clinician provided. If a dose is unclear or missed, check with your pharmacist or clinician rather than changing it yourself.</p><div class="care-share" data-i18n="remindersLocal">Reminders are shown here in this demo</div></article>
+   </section>
+  </section>
+  <section class="page-view hidden" id="appointmentsPage" data-page-view="appointments">
+   <header class="page-heading"><div><div class="eyebrow" data-i18n="overviewEyebrow">YOUR HEALTH, AT A GLANCE</div><h1 data-i18n="navAppointments">Appointments</h1><p data-i18n="planTogether">The people and places supporting your health.</p></div><button class="primary" id="addAppointmentPage">＋ <span data-i18n="addNew">Add new</span></button></header>
+   <section class="stats page-stats" aria-label="Appointment summary">
+    <article class="stat"><div class="stat-head"><span data-i18n="pageAppointmentCount">Visits on your calendar</span></div><div class="stat-number" id="apptPageTotal">0</div><div class="stat-sub" data-i18n="pageAppointmentCountNote">saved in this care plan</div></article>
+    <article class="stat"><div class="stat-head"><span data-i18n="nextVisit">Next appointment</span></div><div class="stat-number" id="apptPageNext">—</div><div class="stat-sub" id="apptPageNextName">None scheduled</div></article>
+    <article class="stat"><div class="stat-head"><span data-i18n="pageAppointmentUpcoming">Coming up</span></div><div class="stat-number" id="apptPageUpcoming">0</div><div class="stat-sub" data-i18n="pageAppointmentUpcomingNote">upcoming visits</div></article>
+   </section>
+   <section class="page-grid">
+    <article class="card"><div class="card-head"><div><h2 data-i18n="appointmentsTitle">Upcoming appointments</h2><div class="muted" data-i18n="pageAppointmentListNote">Keep visit details and directions close at hand.</div></div></div>
+     <div class="filter-row" role="group" aria-label="Filter appointments"><button class="filter-chip active" type="button" data-appointment-filter="upcoming" aria-pressed="true" data-i18n="upcoming">Upcoming</button><button class="filter-chip" type="button" data-appointment-filter="past" aria-pressed="false" data-i18n="pageAppointmentPast">Past</button><button class="filter-chip" type="button" data-appointment-filter="all" aria-pressed="false" data-i18n="viewAll">View all</button></div>
+     <div id="appointmentPageList" aria-live="polite"></div>
+    </article>
+    <article class="card care-tip"><div class="stat-icon">▦</div><h2 data-i18n="pageAppointmentTipTitle">Before your visit</h2><ul class="care-checklist"><li data-i18n="pageAppointmentTipOne">Write down questions you want to ask.</li><li data-i18n="pageAppointmentTipTwo">Bring your current medicine list.</li><li data-i18n="pageAppointmentTipThree">Confirm the time and location with the clinic.</li></ul><div class="care-share" data-i18n="pageCalendarNote">Calendar links open Google Calendar only when selected.</div></article>
+   </section>
+  </section>
+  <section class="page-view hidden" id="reportsPage" data-page-view="reports">
+   <header class="page-heading"><div><div class="eyebrow" data-i18n="reportEyebrow">CLEAR SHARED CARE INFORMATION</div><h1 data-i18n="navReports">Reports</h1><p data-i18n="reportLead">A simple medication snapshot for family members and caregivers.</p></div><div class="report-actions"><button class="secondary" id="downloadReport" type="button" data-i18n="reportDownload">Download CSV</button><button class="primary" id="printReport" type="button" data-i18n="reportPrint">Print / Save PDF</button></div></header>
+   <article class="card report-card">
+    <div class="report-header"><div><div class="eyebrow" data-i18n="reportMedicationTitle">MEDICATION REPORT</div><h2>Ananya Rao</h2><p data-i18n="reportScope">Current daily plan · status for today only</p></div><div class="report-date"><span data-i18n="reportGenerated">Prepared</span><strong id="reportDate">—</strong></div></div>
+    <section class="report-summary" aria-label="Medication report summary" data-i18n-aria-label="reportMedicationTitle">
+     <div><span data-i18n="reportTotal">Scheduled</span><strong id="reportTotal">0</strong></div>
+     <div><span data-i18n="reportTaken">Marked taken</span><strong id="reportTaken">0</strong></div>
+     <div><span data-i18n="reportPending">Needs confirmation</span><strong id="reportPending">0</strong></div>
+    </section>
+    <div class="report-table-wrap"><table class="report-table" id="reportTable"><caption data-i18n="reportTableCaption">Medication plan and today’s check-in</caption><thead><tr><th scope="col" data-i18n="reportMedicine">Medicine</th><th scope="col" data-i18n="reportInstructions">Dose / instructions</th><th scope="col" data-i18n="reportTime">Scheduled time</th><th scope="col" data-i18n="reportStatus">Today’s status</th></tr></thead><tbody id="reportRows"></tbody></table></div>
+    <p class="report-disclaimer" data-i18n="reportDisclaimer">This is a convenience snapshot of the demo schedule, not a medical record. “Needs confirmation” means no one has marked that dose taken here; it does not confirm whether it was missed. Check with the person and follow the clinician’s instructions.</p>
+   </article>
+  </section>
+  <section class="page-view hidden" id="routinesPage" data-page-view="routines">
+   <header class="page-heading"><div><div class="eyebrow" data-i18n="overviewEyebrow">YOUR HEALTH, AT A GLANCE</div><h1 data-i18n="navRoutines">Daily routines</h1><p data-i18n="dailyRhythm">Your everyday wellbeing rhythm</p></div></header>
+   <section class="stats page-stats" aria-label="Daily routine summary">
+    <article class="stat"><div class="stat-head"><span data-i18n="pageRoutineDone">Completed today</span></div><div class="stat-number" id="routinePageDone">0</div><div class="stat-sub"><span data-i18n="pageRoutineOf">of</span> <span id="routinePageTotal">0</span> <span data-i18n="pageRoutineCount">daily routines</span></div></article>
+    <article class="stat"><div class="stat-head"><span data-i18n="pageRoutineProgress">Today's rhythm</span></div><div class="routine-progress"><span id="routineProgressFill"></span></div><div class="stat-sub" id="routineProgressText">0% complete</div></article>
+   </section>
+   <section class="page-grid">
+    <article class="card"><div class="card-head"><div><h2 data-i18n="routinesTitle">Little things that help</h2><div class="muted" data-i18n="pageRoutineListNote">Tap a switch when you finish an activity.</div></div></div><div id="routinePageList"></div></article>
+    <article class="card care-tip"><div class="stat-icon">🌱</div><h2 data-i18n="pageRoutineTipTitle">Small steps count</h2><p data-i18n="pageRoutineTip">Choose a comfortable pace. You can adjust your routines with support from your care team.</p><div class="care-share" data-i18n="routineToast">Routine updated for today.</div></article>
+   </section>
+  </section>
+  <section class="page-view hidden" id="familyPage" data-page-view="family">
+   <header class="page-heading"><div><div class="eyebrow" data-i18n="overviewEyebrow">YOUR HEALTH, AT A GLANCE</div><h1 data-i18n="navCircle">Care circle</h1><p data-i18n="alwaysInYourCorner">Always in your corner</p></div><button class="primary" id="inviteFamily">＋ <span data-i18n="pageInviteFamily">Invite family</span></button></header>
+   <section class="stats page-stats" aria-label="Care circle summary">
+    <article class="stat"><div class="stat-head"><span data-i18n="pageCircleMembers">People in your circle</span></div><div class="stat-number">4</div><div class="stat-sub" data-i18n="membersOnline">4 people keeping in touch</div></article>
+    <article class="stat"><div class="stat-head"><span data-i18n="pageCircleStatus">Sharing status</span></div><div class="stat-number" data-i18n="pageCircleDemo">Demo</div><div class="stat-sub" data-i18n="pageCircleStatusNote">Sample household information</div></article>
+   </section>
+   <section class="page-grid">
+    <article class="card"><div class="card-head"><div><h2 data-i18n="circleTitle">Your care circle</h2><div class="muted" data-i18n="familyUpdates">Your family can see your care updates and help when you need them.</div></div></div><div id="familyPageList"></div></article>
+    <article class="card care-tip"><div class="stat-icon">♧</div><h2 data-i18n="pageCircleShareTitle">Sharing with care</h2><p data-i18n="pageCircleShareCopy">In a connected care plan, trusted family members can help keep routines and visits organized.</p><div class="care-share" data-i18n="inviteDemo">Family invitations are part of this demo. Secure sharing requires a connected account.</div>
+     <section class="request-panel" id="careRequestPanel">
+      <h3 data-i18n="requestHelpTitle">Send a request to the care administrator</h3>
+      <p data-i18n="requestHelpCopy">Your request will appear in the administrator’s care desk. You can follow its status here.</p>
+      <form id="careRequestForm" class="care-request-form">
+       <label for="careRequestTitle" data-i18n="requestTitleLabel">What do you need help with?</label>
+       <input id="careRequestTitle" name="title" maxlength="100" required>
+       <label for="careRequestCategory" data-i18n="requestCategoryLabel">Request type</label>
+       <select id="careRequestCategory" name="category" required><option value="care" data-i18n="requestCare">Care support</option><option value="medication" data-i18n="requestMedication">Medication check</option><option value="appointment" data-i18n="requestAppointment">Appointment</option><option value="contact" data-i18n="requestContact">Contact a doctor or hospital</option><option value="other" data-i18n="requestOther">Other</option></select>
+       <label for="careRequestDetails" data-i18n="requestDetailsLabel">Details</label>
+       <textarea id="careRequestDetails" name="details" maxlength="500" rows="3"></textarea>
+       <label for="careRequestPriority" data-i18n="requestPriorityLabel">Priority</label>
+       <select id="careRequestPriority" name="priority"><option value="normal" data-i18n="requestNormal">Routine</option><option value="urgent" data-i18n="requestUrgent">Urgent follow-up</option></select>
+       <button class="primary" type="submit" data-i18n="requestSubmit">Send to administrator</button>
+      </form>
+      <p class="request-safety-note"><span data-i18n="requestSafetyNote">For an immediate emergency, call local emergency services. This request is not monitored as an emergency alert.</span> <button class="link-btn" type="button" data-page-link="emergency" data-i18n="pageOpenEmergency">Open emergency options</button></p>
+      <div class="task-list" id="myCareRequests" aria-live="polite"></div>
+     </section>
+    </article>
+   </section>
+  </section>
+  <section class="page-view hidden" id="aiSolutionsPage" data-page-view="ai-solutions">
+   <header class="page-heading"><div><div class="eyebrow" data-i18n="pageWellbeingLabel">EARLY AWARENESS, GENTLE SUPPORT</div><h1 data-i18n="navAiSolutions">AI Solutions &amp; Preventions</h1><p data-i18n="pageAiLead">Notice changes early and share concerns with the care team.</p></div></header>
+   <div class="safety-banner" role="note"><span class="safety-icon">✧</span><p><strong data-i18n="pageAiSafetyTitle">Support, not diagnosis</strong><br><span data-i18n="pageAiSafetyCopy">This demo offers general prevention reminders only. It cannot identify a condition or replace professional medical advice.</span></p></div>
+   <section class="page-grid">
+    <article class="card"><div class="card-head"><div><h2 data-i18n="pageCheckInTitle">Care check-in</h2><div class="muted" data-i18n="pageCheckInCopy">Choose the closest description to see a safe next step.</div></div></div>
+     <label class="field-label" for="symptomCheckIn" data-i18n="pageSymptomLabel">What has changed?</label>
+     <select class="checkin-select" id="symptomCheckIn">
+      <option value="routine" data-i18n="pageSymptomRoutine">No new or worsening concern</option>
+      <option value="change" data-i18n="pageSymptomChange">A new or worsening symptom</option>
+      <option value="urgent" data-i18n="pageSymptomUrgent">A severe or sudden warning sign</option>
+     </select>
+     <button class="primary" id="checkInButton" type="button" data-i18n="pageGetGuidance">Show suggested next step</button>
+     <div class="guidance-result" id="checkInResult" role="status" aria-live="polite" data-i18n="pageRoutineGuidance">Keep following the care plan and share new concerns with the care team.</div>
+    </article>
+    <article class="card"><div class="stat-icon">⚠</div><h2 data-i18n="pageRedFlagsTitle">Get urgent help for</h2><p data-i18n="pageRedFlagsCopy">Sudden trouble breathing, chest pain, fainting or unresponsiveness, severe bleeding, or possible stroke signs such as face drooping, arm weakness, or speech trouble.</p><button class="secondary" type="button" data-page-link="emergency" data-i18n="pageOpenEmergency">Open emergency options</button></article>
+   </section>
+   <section class="prevention-grid" aria-label="Prevention reminders">
+    <article class="prevention-card"><div class="stat-icon">◉</div><h2 data-i18n="pagePreventionMedicine">Medicine safety</h2><p data-i18n="pagePreventionMedicineCopy">Use the prescribed schedule. Ask a clinician or pharmacist before changing or repeating a dose.</p></article>
+    <article class="prevention-card"><div class="stat-icon">⌂</div><h2 data-i18n="pagePreventionFalls">Reduce fall risks</h2><p data-i18n="pagePreventionFallsCopy">Keep walkways lit and clear, use familiar supports, and report new dizziness or falls to a clinician.</p></article>
+    <article class="prevention-card"><div class="stat-icon">💧</div><h2 data-i18n="pagePreventionHydration">Everyday comfort</h2><p data-i18n="pagePreventionHydrationCopy">Offer fluids and rest as appropriate, while following any individual fluid or activity guidance from the care team.</p></article>
+   </section>
+  </section>
+  <section class="page-view hidden" id="emergencyPage" data-page-view="emergency">
+   <header class="page-heading"><div><div class="eyebrow" data-i18n="pageEmergencyLabel">FAST, CLEAR OPTIONS</div><h1 data-i18n="navEmergency">Emergency</h1><p data-i18n="pageEmergencyLead">If someone may be in immediate danger, call local emergency services now.</p></div></header>
+   <div class="safety-banner emergency-banner" role="alert"><span class="safety-icon">!</span><p><strong data-i18n="pageEmergencyNow">Do not wait for this app in an emergency.</strong><br><span data-i18n="pageEmergencyAdvice">Call for urgent help and follow the dispatcher’s instructions.</span></p></div>
+   <section class="emergency-grid">
+    <article class="card emergency-call-card"><div class="stat-icon">☎</div><h2 data-i18n="pageEmergencyServices">Emergency services</h2><p data-i18n="pageEmergencyServicesCopy">India emergency number. Use for immediate danger or severe sudden symptoms.</p><a class="emergency-action" href="tel:112" aria-label="Call emergency services at 112">112 <span data-i18n="pageCallNow">Call now</span></a></article>
+    <article class="card emergency-call-card"><div class="stat-icon">＋</div><h2 data-i18n="pageAmbulance">Ambulance</h2><p data-i18n="pageAmbulanceCopy">Call 108 where available in your state. If unavailable, call 112.</p><a class="emergency-action secondary-action" href="tel:108" aria-label="Call ambulance at 108">108 <span data-i18n="pageCallNow">Call now</span></a></article>
+   </section>
+   <section class="page-grid emergency-lower">
+    <article class="card"><div class="card-head"><div><h2 data-i18n="pageFindHospital">Find nearby hospitals</h2><div class="muted" data-i18n="pageLocationPrivacy">Location is requested only after you tap; maps opens only if you choose its link.</div></div></div>
+     <button class="primary" id="findHospitals" type="button" data-i18n="pageUseLocation">Use my location</button>
+     <p class="location-status" id="locationStatus" role="status" aria-live="polite" data-i18n="pageLocationIdle">Your location is not being accessed.</p>
+     <a class="map-link hidden" id="hospitalMapLink" href="#" target="_blank" rel="noopener noreferrer" data-i18n="pageOpenMap">Open nearby hospitals in Maps</a>
+    </article>
+    <article class="card"><div class="card-head"><div><h2 data-i18n="pageCallDoctor">Contact your doctor</h2><div class="muted" data-i18n="pageDoctorNumberNote">Enter a number you already trust. It stays in this page and is not sent to the server.</div></div></div>
+     <label class="field-label" for="doctorPhone" data-i18n="pageDoctorPhone">Doctor or clinic phone</label>
+     <input class="checkin-select" id="doctorPhone" type="tel" inputmode="tel" autocomplete="tel" maxlength="24" placeholder="+91 00000 00000">
+     <a class="emergency-action doctor-action hidden" id="doctorCallLink" href="#" aria-disabled="true" data-i18n="pageCallDoctorNow">Call doctor</a>
+     <p class="location-status" id="doctorPhoneStatus" role="status" aria-live="polite" data-i18n="pageDoctorPhoneHelp">Add a number to enable the call link. Your phone will ask before placing a call.</p>
+    </article>
+   </section>
+  </section>
+  <section class="page-view hidden" id="adminPage" data-page-view="admin">
+   <header class="page-heading"><div><div class="eyebrow" data-i18n="adminEyebrow">HOUSEHOLD CARE COORDINATION</div><h1 data-i18n="adminTitle">Administrator care desk</h1><p data-i18n="adminLead">Review household requests, verify medication check-ins, and reach local care contacts.</p></div><button class="secondary" id="refreshAdminDashboard" type="button" data-i18n="adminRefresh">Refresh</button></header>
+   <section class="stats page-stats" aria-label="Administrator care summary">
+    <article class="stat"><div class="stat-head"><span data-i18n="adminOpenRequests">Open requests</span></div><div class="stat-number" id="adminOpenRequestCount">0</div><div class="stat-sub" data-i18n="adminOpenRequestsNote">awaiting follow-up</div></article>
+    <article class="stat"><div class="stat-head"><span data-i18n="adminMedicationCount">Medication entries</span></div><div class="stat-number" id="adminMedicationCountValue">0</div><div class="stat-sub" data-i18n="adminMedicationCountNote">in the shared care plan</div></article>
+    <article class="stat"><div class="stat-head"><span data-i18n="adminVerifiedCount">Reviewed</span></div><div class="stat-number" id="adminVerifiedCountValue">0</div><div class="stat-sub" data-i18n="adminVerifiedCountNote">medication check-ins</div></article>
+   </section>
+   <section class="admin-grid">
+    <article class="card admin-requests-card"><div class="card-head"><div><h2 data-i18n="adminRequestsTitle">Requests from users and guests</h2><div class="muted" data-i18n="adminRequestsCopy">Every submitted request is routed here for administrator follow-up.</div></div></div><div id="adminCareRequests" class="task-list" aria-live="polite"></div></article>
+    <article class="card admin-medications-card"><div class="card-head"><div><h2 data-i18n="adminMedicationTitle">Medication verification</h2><div class="muted" data-i18n="adminMedicationCopy">Review the shared schedule and check-in status. Verification does not change whether a dose is marked taken.</div></div></div><div id="adminMedicationList" class="admin-medication-list" aria-live="polite"></div></article>
+    <article class="card admin-contacts-card"><div class="card-head"><div><h2 data-i18n="adminContactsTitle">Hospitals and doctor contacts</h2><div class="muted" data-i18n="adminContactsCopy">Calls happen only when you choose a call link. Use location search to open nearby hospitals in Maps.</div></div></div>
+     <div class="admin-contact-actions"><a class="emergency-action" href="tel:112" aria-label="Call emergency services at 112">112 <span data-i18n="pageEmergencyServices">Emergency services</span></a><a class="emergency-action secondary-action" href="tel:108" aria-label="Call ambulance at 108">108 <span data-i18n="pageAmbulance">Ambulance</span></a></div>
+     <div class="admin-contact-tools"><button class="primary" id="adminFindHospitals" type="button" data-i18n="pageUseLocation">Use my location</button><p class="location-status" id="adminLocationStatus" role="status" aria-live="polite" data-i18n="pageLocationIdle">Your location is not being accessed.</p><a class="map-link hidden" id="adminHospitalMapLink" href="#" target="_blank" rel="noopener noreferrer" data-i18n="pageOpenMap">Open nearby hospitals in Maps</a></div>
+     <div class="admin-contact-tools"><label class="field-label" for="adminDoctorPhone" data-i18n="pageDoctorPhone">Doctor or clinic phone</label><input class="checkin-select" id="adminDoctorPhone" type="tel" inputmode="tel" autocomplete="tel" maxlength="24" placeholder="+91 00000 00000"><a class="emergency-action doctor-action hidden" id="adminDoctorCallLink" href="#" aria-disabled="true" data-i18n="pageCallDoctorNow">Call doctor</a><p class="location-status" id="adminDoctorPhoneStatus" role="status" aria-live="polite" data-i18n="pageDoctorPhoneHelp">Add a number to enable the call link. Your phone will ask before placing a call.</p></div>
+    </article>
+   </section>
+  </section>
+ </main>
+</div>
+<button class="assistant-fab hidden" id="assistantFab" aria-label="Ask Everwell">✳ <span data-i18n="askEverwell">Ask Everwell</span></button>
+<section class="assistant-panel hidden" id="assistantPanel" aria-label="Everwell assistant"><div class="chat-head"><div class="brand-mark" style="width:32px;height:32px;border-radius:10px">✳</div><div><b data-i18n="assistantTitle">Everwell companion</b><small data-i18n="assistantStatus">Here to help, not replace your doctor</small></div><button id="closeChat" aria-label="Close">×</button></div><div class="chat-messages" id="messages" aria-live="polite" aria-relevant="additions"><div class="bubble" data-i18n="assistantGreeting">Hi, Ananya! 🌿 I can help organize your care, explain how to use this app, or find your next reminder. What would be helpful?</div></div><div class="suggestions"><button data-question="What medicines do I have today?">Today's medicines</button><button data-question="When is my next appointment?">Next appointment</button><button data-question="How can I invite family?">Invite family</button></div><div class="chat-emergency-actions" role="group" aria-label="Emergency call options" data-i18n-aria-label="assistantEmergencyActions"><a href="tel:112">112 <span data-i18n="assistantCall112">Emergency services</span></a><a href="tel:108">108 <span data-i18n="assistantCall108">Ambulance</span></a><button type="button" data-page-link="emergency" id="assistantOpenEmergency" data-i18n="assistantOpenEmergency">Emergency options</button></div><form class="chat-form" id="chatForm"><input id="chatInput" autocomplete="off" data-i18n-placeholder="chatPlaceholder" placeholder="Ask me anything about your care…"><button aria-label="Send message">↑</button></form></section>
+<div class="modal-backdrop hidden" id="modalBackdrop"><div class="modal" id="modalContent" role="dialog" aria-modal="true"></div></div>
+<script src="app.js" defer></script>
+</body>
+</html>
